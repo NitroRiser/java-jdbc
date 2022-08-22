@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import db.DB;
+import db.DbIntegrityException;
 
 public class Program {
     public static void main(String[] args) {
@@ -15,20 +16,19 @@ public class Program {
             conn = DB.getConnection();
 
             st = conn.prepareStatement(
-                "UPDATE seller SET BaseSalary = BaseSalary + ? "
-                + "WHERE (DepartmentId = ?)"
-            );
-
-            st.setDouble(1, 200);
-            st.setInt(2, 2);
+                "DELETE FROM department "
+                +"WHERE "
+                +"Id = ?");
             
+            st.setInt(1,2);
+
             int rows = st.executeUpdate();
 
             System.out.println("Done! " + rows + " rows affected!");
 
         } catch (Exception e) {
             //TODO: handle exception
-            e.printStackTrace();
+            throw new DbIntegrityException(e.getMessage());
         }finally{
             DB.closeStatement(st);
             DB.closeConnection();
